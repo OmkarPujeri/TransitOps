@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 
 type Result = { error?: string };
 
-/** Fuel & expenses feed the reports and dashboard cost rollups, so refresh those too. */
+// Fuel & expenses feed reports and dashboard rollups, so refresh those too.
 function refresh() {
   revalidatePath("/expenses");
   revalidatePath("/reports");
@@ -17,7 +17,7 @@ function optionalId(formData: FormData, key: string): string | null {
   return v ? String(v) : null;
 }
 
-/** A blank date input means "now" — let the DB default fill it in. */
+// Blank date means "now" — let the DB default fill it.
 function optionalDate(formData: FormData): string | undefined {
   const v = formData.get("logged_at");
   return v ? new Date(String(v)).toISOString() : undefined;

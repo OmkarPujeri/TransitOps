@@ -12,15 +12,11 @@ export interface FleetSummary {
 
 export interface FleetSnapshot {
   summary: FleetSummary;
-  /** Compact, LLM-friendly description of current fleet state. */
+  // Compact, LLM-friendly description of current fleet state.
   text: string;
 }
 
-/**
- * Reads the current fleet state and returns both a small summary (for headers)
- * and a compact text block used to ground the AI copilot. The fleet is small,
- * so we can afford to list every vehicle/driver.
- */
+// Reads current fleet state: a summary for headers and a compact text block to ground the copilot.
 export async function buildFleetSnapshot(supabase: DB): Promise<FleetSnapshot> {
   const today = new Date().toISOString().slice(0, 10);
 

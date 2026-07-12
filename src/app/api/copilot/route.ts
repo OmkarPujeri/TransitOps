@@ -3,15 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { buildFleetSnapshot } from "@/lib/fleet-snapshot";
 import { chatCompletion, groqConfigured, type ChatMessage } from "@/lib/groq";
 
-/**
- * Copilot chat — answers questions grounded in the live fleet snapshot.
- *
- *   POST { messages: {role, content}[] }
- *   ->   { reply }  |  { error }
- *
- * The snapshot is rebuilt server-side on every request so answers always
- * reflect current data (the client never supplies fleet facts).
- */
+// Copilot chat grounded in the live fleet snapshot: POST { messages } -> { reply } | { error }.
+// Snapshot is rebuilt server-side each request, so the client never supplies fleet facts.
 export async function POST(req: Request) {
   if (!groqConfigured()) {
     return NextResponse.json({

@@ -16,11 +16,7 @@ export type FleetVehicle = {
   reg_number: string;
 };
 
-/**
- * Vehicle KPIs + fleet-status breakdown, filterable by type / status / region
- * (spec §3.2). Filtering happens client-side over the vehicle list the server
- * already loaded.
- */
+// Vehicle KPIs + fleet-status breakdown, filterable by type/status/region (spec §3.2).
 export function FleetPanel({ vehicles }: { vehicles: FleetVehicle[] }) {
   const [type, setType] = useState("all");
   const [status, setStatus] = useState("all");

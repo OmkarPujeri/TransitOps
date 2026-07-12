@@ -8,7 +8,7 @@ type ThemeCtx = { theme: Theme; toggle: () => void };
 
 const Ctx = React.createContext<ThemeCtx | null>(null);
 
-/** Runs before paint (in <head>) to apply the saved theme with no flash. */
+// Runs before paint to apply the saved theme with no flash.
 export const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();`;
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
@@ -39,7 +39,7 @@ export function useTheme(): ThemeCtx {
   return ctx;
 }
 
-/** Compact icon toggle for the sidebar footer. */
+// Compact icon toggle for the sidebar footer.
 export function ThemeToggle({ className }: { className?: string }) {
   const { theme, toggle } = useTheme();
   const dark = theme === "dark";

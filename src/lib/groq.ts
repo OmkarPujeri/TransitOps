@@ -1,11 +1,4 @@
-/**
- * Thin Groq client. Groq exposes an OpenAI-compatible Chat Completions API,
- * so we just POST to it with fetch — no SDK dependency needed.
- *
- * Every AI feature in the app degrades gracefully: call `groqConfigured()`
- * first, and always keep a deterministic fallback for when the key is missing
- * or Groq is unreachable.
- */
+// Groq chat client (OpenAI-compatible API). Callers keep a fallback for when the key is missing.
 
 export const GROQ_MODEL = "llama-3.3-70b-versatile";
 
@@ -16,7 +9,7 @@ export type ChatMessage = {
   content: string;
 };
 
-/** True when a Groq API key is present in the environment. */
+// True when a Groq API key is present.
 export function groqConfigured(): boolean {
   return Boolean(process.env.GROQ_API_KEY);
 }
@@ -27,11 +20,7 @@ interface ChatOptions {
   model?: string;
 }
 
-/**
- * Run a chat completion and return the assistant's text.
- * Throws if the key is missing or Groq returns an error — callers should
- * catch and fall back to non-AI behaviour.
- */
+// Returns the assistant's text; throws if the key is missing or Groq errors.
 export async function chatCompletion(
   messages: ChatMessage[],
   { temperature = 0.4, maxTokens = 600, model = GROQ_MODEL }: ChatOptions = {}
@@ -51,7 +40,6 @@ export async function chatCompletion(
       temperature,
       max_tokens: maxTokens,
     }),
-    // Never cache AI responses.
     cache: "no-store",
   });
 

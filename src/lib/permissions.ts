@@ -1,28 +1,16 @@
 import type { Role } from "@/lib/types";
 
-/**
- * Role-Based Access Control — single source of truth.
- *
- * Every app route maps to the roles that may VIEW it and the roles that may
- * EDIT (create / update / delete) within it. This drives three enforcement
- * layers: the sidebar (hide links), the layout route guard (block direct URLs),
- * and the client edit-gate (hide action buttons). The database enforces writes
- * independently via RLS (see supabase/rbac.sql).
- */
+// RBAC single source of truth: which roles may view/edit each route.
+// Drives the sidebar, route guard, and edit-gates; RLS enforces writes at the DB (supabase/rbac.sql).
 
 export type Access = {
-  /** Roles allowed to open the page. */
-  view: Role[];
-  /** Roles allowed to mutate data on the page. Subset of `view`. */
-  edit: Role[];
+  view: Role[]; // roles allowed to open the page
+  edit: Role[]; // roles allowed to mutate data (subset of view)
 };
 
 const ALL: Role[] = ["fleet_manager", "driver", "safety_officer", "financial_analyst"];
 
-/**
- * Keyed by the top-level route segment. Fleet Manager is the admin and can
- * always edit; other roles are scoped to their spec job description.
- */
+// Keyed by top-level route segment. Fleet Manager is admin; others scoped to their job.
 export const ROUTE_ACCESS: Record<string, Access> = {
   dashboard: { view: ALL, edit: ["fleet_manager"] },
   vehicles: { view: ALL, edit: ["fleet_manager"] },
@@ -34,7 +22,7 @@ export const ROUTE_ACCESS: Record<string, Access> = {
   copilot: { view: ALL, edit: ALL },
 };
 
-/** Normalise "/vehicles/123" or "vehicles" to the top-level segment "vehicles". */
+// Normalise "/vehicles/123" or "vehicles" to the segment "vehicles".
 export function routeKey(pathname: string): string {
   return pathname.replace(/^\/+/, "").split("/")[0] ?? "";
 }
@@ -51,7 +39,7 @@ export function canEdit(role: Role, pathname: string): boolean {
   return access.edit.includes(role);
 }
 
-/** The first page this role is allowed to see — used as a safe redirect target. */
+// First page this role can see — a safe redirect target.
 export function landingFor(role: Role): string {
   if (canView(role, "dashboard")) return "/dashboard";
   const first = Object.keys(ROUTE_ACCESS).find((key) => ROUTE_ACCESS[key].view.includes(role));

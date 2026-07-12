@@ -1,11 +1,7 @@
 import Link from "next/link";
 import { Truck, Route, Gauge, ShieldCheck } from "lucide-react";
 
-/**
- * Split-screen auth layout: a branded story panel on the left that states what
- * TransitOps does, and the form on the right. The left panel collapses on
- * mobile so the form is always the focus on small screens.
- */
+// Split-screen auth: branded panel on the left, form on the right. Panel hides on mobile.
 export function AuthShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">

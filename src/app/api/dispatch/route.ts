@@ -3,17 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { chatCompletion, groqConfigured } from "@/lib/groq";
 import type { Vehicle, Driver } from "@/lib/types";
 
-/**
- * Dispatch Copilot — ranks available vehicles + drivers for a given cargo weight.
- *
- * Contract (called from trips-client.tsx):
- *   POST { cargo_weight_kg: number }
- *   ->   { vehicle_id, driver_id, reason }  |  { error }
- *
- * The ranking is deterministic so the button always returns a valid pairing.
- * Groq only writes the human-readable "why"; if it's unavailable we fall back
- * to a templated explanation.
- */
+// Dispatch ranking: POST { cargo_weight_kg } -> { vehicle_id, driver_id, reason } | { error }.
+// Pick is deterministic (always valid); Groq only writes the "why", falling back to a template.
 export async function POST(req: Request) {
   let cargo = 0;
   try {

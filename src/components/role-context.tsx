@@ -4,11 +4,7 @@ import * as React from "react";
 import type { Role } from "@/lib/types";
 import { canEdit as canEditRoute } from "@/lib/permissions";
 
-/**
- * Makes the current user's role available to client components so they can
- * gate edit affordances (hide "Add"/"Delete" buttons for read-only roles).
- * This is UX only — the layout route guard and RLS are the real enforcement.
- */
+// Exposes the user's role to client components for edit-gating (UX only; route guard + RLS enforce).
 const RoleCtx = React.createContext<Role | null>(null);
 
 export function RoleProvider({ role, children }: { role: Role; children: React.ReactNode }) {
@@ -21,7 +17,7 @@ export function useRole(): Role {
   return role;
 }
 
-/** True if the current role may edit the given route (defaults to the current path's segment). */
+// True if the current role may edit the given route.
 export function useCanEdit(pathname: string): boolean {
   const role = useRole();
   return canEditRoute(role, pathname);
