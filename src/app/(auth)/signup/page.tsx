@@ -42,7 +42,7 @@ export default function SignupPage() {
           </p>
         </div>
         {state?.error && (
-          <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">{state.error}</p>
+          <p className="rounded-md border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-3 py-2 text-sm text-red-400">{state.error}</p>
         )}
         <Button type="submit" size="lg" className="w-full" disabled={pending}>
           {pending ? "Creating…" : "Create account"}

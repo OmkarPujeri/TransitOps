@@ -2,12 +2,12 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const tones: Record<string, string> = {
-  success: "bg-green-100 text-green-700",
-  info: "bg-sky-100 text-sky-700",
-  warning: "bg-amber-100 text-amber-700",
-  danger: "bg-red-100 text-red-700",
-  muted: "bg-slate-100 text-slate-600",
-  primary: "bg-indigo-100 text-indigo-700",
+  success: "bg-green-500/15 text-green-400",
+  info: "bg-sky-500/15 text-sky-400",
+  warning: "bg-amber-500/15 text-amber-400",
+  danger: "bg-red-500/15 text-red-400",
+  muted: "bg-white/8 text-[var(--muted)]",
+  primary: "bg-[var(--primary)]/15 text-blue-400",
 };
 
 export function Badge({

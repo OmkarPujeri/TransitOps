@@ -30,13 +30,14 @@ import {
   type VehicleStatus,
 } from "@/lib/types";
 
+// Brighter values so bars/lines read cleanly on the black canvas.
 const COLORS = {
-  primary: "#4f46e5",
-  success: "#16a34a",
-  warning: "#d97706",
-  danger: "#dc2626",
-  info: "#0284c7",
-  muted: "#64748b",
+  primary: "#2563eb",
+  success: "#22c55e",
+  warning: "#f59e0b",
+  danger: "#ef4444",
+  info: "#38bdf8",
+  muted: "#8b8b96",
 };
 
 const STATUS_COLOR: Record<VehicleStatus, string> = {
@@ -45,6 +46,18 @@ const STATUS_COLOR: Record<VehicleStatus, string> = {
   in_shop: COLORS.warning,
   retired: COLORS.muted,
 };
+
+// Dark, on-theme popover for every chart tooltip.
+const TOOLTIP_STYLE = {
+  contentStyle: {
+    background: "var(--surface)",
+    border: "1px solid var(--border)",
+    borderRadius: 8,
+    color: "var(--foreground)",
+  },
+  labelStyle: { color: "var(--muted)" },
+  itemStyle: { color: "var(--foreground)" },
+} as const;
 
 type CSVRow = Record<string, string | number>;
 
@@ -254,9 +267,9 @@ export function ReportsClient({
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={byVehicle}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis dataKey="reg" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip formatter={(v) => formatCurrency(Number(v))} />
+                <XAxis dataKey="reg" tick={{ fontSize: 12, fill: "var(--muted)" }} />
+                <YAxis tick={{ fontSize: 12, fill: "var(--muted)" }} />
+                <Tooltip {...TOOLTIP_STYLE} formatter={(v) => formatCurrency(Number(v))} />
                 <Legend />
                 <Bar dataKey="fuelCost" name="Fuel" stackId="c" fill={COLORS.info} />
                 <Bar dataKey="expenseCost" name="Expenses" stackId="c" fill={COLORS.warning} />
@@ -278,7 +291,7 @@ export function ReportsClient({
                   <Cell key={d.status} fill={STATUS_COLOR[d.status as VehicleStatus]} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip {...TOOLTIP_STYLE} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>
@@ -295,9 +308,9 @@ export function ReportsClient({
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={efficiencyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis dataKey="reg" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip formatter={(v) => `${Number(v)} km/L`} />
+                <XAxis dataKey="reg" tick={{ fontSize: 12, fill: "var(--muted)" }} />
+                <YAxis tick={{ fontSize: 12, fill: "var(--muted)" }} />
+                <Tooltip {...TOOLTIP_STYLE} formatter={(v) => `${Number(v)} km/L`} />
                 <Bar dataKey="efficiency" name="km/L" fill={COLORS.success} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -315,9 +328,9 @@ export function ReportsClient({
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={active}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                <XAxis dataKey="reg" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip formatter={(v) => `${Number(v)}%`} />
+                <XAxis dataKey="reg" tick={{ fontSize: 12, fill: "var(--muted)" }} />
+                <YAxis tick={{ fontSize: 12, fill: "var(--muted)" }} />
+                <Tooltip {...TOOLTIP_STYLE} formatter={(v) => `${Number(v)}%`} />
                 <Bar dataKey="roi" name="ROI %" radius={[4, 4, 0, 0]}>
                   {active.map((v) => (
                     <Cell key={v.reg} fill={v.roi >= 0 ? COLORS.success : COLORS.danger} />

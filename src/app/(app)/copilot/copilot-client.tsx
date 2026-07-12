@@ -88,10 +88,10 @@ export function CopilotClient({ summary, configured }: { summary: Summary; confi
       </div>
 
       {!configured && (
-        <div className="flex items-center gap-2 rounded-[var(--radius)] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+        <div className="flex items-center gap-2 rounded-[var(--radius)] border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-400">
           <AlertTriangle className="h-4 w-4 shrink-0" />
-          AI is not configured. Add <code className="mx-1 rounded bg-amber-100 px-1">GROQ_API_KEY</code> to
-          <code className="mx-1 rounded bg-amber-100 px-1">.env.local</code> and restart the dev server.
+          AI is not configured. Add <code className="mx-1 rounded bg-amber-500/15 px-1">GROQ_API_KEY</code> to
+          <code className="mx-1 rounded bg-amber-500/15 px-1">.env.local</code> and restart the dev server.
         </div>
       )}
 
@@ -100,7 +100,7 @@ export function CopilotClient({ summary, configured }: { summary: Summary; confi
         <div ref={scrollRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto p-5">
           {messages.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--primary)]/12 text-[var(--primary)]">
                 <Sparkles className="h-6 w-6" />
               </div>
               <div>

@@ -1,35 +1,23 @@
 @import "tailwindcss";
 
+/*
+  TransitOps runs a single, consistent dark theme:
+  pure-black canvas, hairline borders, one blue accent. No glass, no gradients.
+*/
 :root {
-  --background: #f6f7f9;
-  --surface: #ffffff;
-  --surface-2: #f1f3f5;
-  --foreground: #0f172a;
-  --muted: #64748b;
-  --border: #e2e8f0;
-  --primary: #4f46e5;
-  --primary-foreground: #ffffff;
-  --success: #16a34a;
-  --warning: #d97706;
-  --danger: #dc2626;
-  --info: #0284c7;
-  --radius: 0.65rem;
-  color-scheme: light;
-}
-
-.dark {
-  --background: #0b1020;
-  --surface: #131a2c;
-  --surface-2: #1c2438;
-  --foreground: #e8ecf4;
-  --muted: #8b97ad;
-  --border: #26304a;
-  --primary: #6366f1;
+  --background: #000000;
+  --surface: #0b0b0e;
+  --surface-2: #16161c;
+  --foreground: #f3f3f5;
+  --muted: #8b8b96;
+  --border: #212127;
+  --primary: #2563eb;
   --primary-foreground: #ffffff;
   --success: #22c55e;
   --warning: #f59e0b;
   --danger: #ef4444;
-  --info: #38bdf8;
+  --info: #3b82f6;
+  --radius: 0.6rem;
   color-scheme: dark;
 }
 
@@ -61,11 +49,21 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+::selection {
+  background: color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
 @layer utilities {
+  /* Flat surface card — border only, no shadow, so it reads as one system on black. */
   .card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+
+  /* Subtle dotted grid used behind hero / brand panels. */
+  .dot-grid {
+    background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--foreground) 9%, transparent) 1px, transparent 0);
+    background-size: 22px 22px;
   }
 }

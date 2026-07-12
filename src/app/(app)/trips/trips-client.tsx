@@ -119,9 +119,9 @@ export function TripsClient({
           </div>
 
           {/* AI Copilot */}
-          <div className="rounded-[var(--radius)] border border-indigo-200 bg-indigo-50/60 p-3">
+          <div className="rounded-[var(--radius)] border border-[var(--primary)]/25 bg-[var(--primary)]/10 p-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-sm font-medium text-indigo-700">
+              <div className="flex items-center gap-2 text-sm font-medium text-[var(--primary)]">
                 <Sparkles className="h-4 w-4" /> Dispatch Copilot
               </div>
               <Button
@@ -136,9 +136,9 @@ export function TripsClient({
               </Button>
             </div>
             {cargo <= 0 && (
-              <p className="mt-1 text-xs text-indigo-600/70">Enter cargo weight to get a recommendation.</p>
+              <p className="mt-1 text-xs text-[var(--primary)]/70">Enter cargo weight to get a recommendation.</p>
             )}
-            {aiReason && <p className="mt-2 text-xs text-indigo-800">{aiReason}</p>}
+            {aiReason && <p className="mt-2 text-xs text-[var(--foreground)]">{aiReason}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -196,7 +196,7 @@ export function TripsClient({
           </div>
 
           {overCapacity && selectedVehicle && (
-            <p className="flex items-center gap-2 rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">
+            <p className="flex items-center gap-2 rounded-md border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-3 py-2 text-sm text-red-400">
               <AlertTriangle className="h-4 w-4" />
               Cargo {cargo.toLocaleString()}kg exceeds {selectedVehicle.reg_number}&apos;s capacity of{" "}
               {selectedVehicle.max_load_kg.toLocaleString()}kg.

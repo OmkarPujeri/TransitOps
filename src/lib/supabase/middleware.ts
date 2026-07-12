@@ -31,7 +31,8 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const isAuthRoute = path.startsWith("/login") || path.startsWith("/signup");
-  const isPublic = isAuthRoute || path.startsWith("/auth");
+  // The marketing landing page ("/") is open to everyone, logged in or not.
+  const isPublic = isAuthRoute || path === "/" || path.startsWith("/auth");
 
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
