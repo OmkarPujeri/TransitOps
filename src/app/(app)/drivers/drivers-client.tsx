@@ -8,6 +8,7 @@ import { Input, Label, Select } from "@/components/ui/input";
 import { Dialog } from "@/components/ui/dialog";
 import { Table, THead, TR, TH, TD, EmptyRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/toast";
+import { useCanEdit } from "@/components/role-context";
 import { formatDate, daysUntil, cn } from "@/lib/utils";
 import { DRIVER_STATUS_META, type Driver, type DriverStatus } from "@/lib/types";
 import { saveDriver, deleteDriver } from "./actions";
@@ -34,6 +35,7 @@ function LicenseCell({ expiry }: { expiry: string }) {
 
 export function DriversClient({ drivers }: { drivers: Driver[] }) {
   const toast = useToast();
+  const canEdit = useCanEdit("/drivers");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Driver | null>(null);
   const [q, setQ] = useState("");
@@ -75,14 +77,16 @@ export function DriversClient({ drivers }: { drivers: Driver[] }) {
             onChange={(e) => setQ(e.target.value)}
           />
         </div>
-        <Button
-          onClick={() => {
-            setEditing(null);
-            setOpen(true);
-          }}
-        >
-          <Plus className="h-4 w-4" /> Add driver
-        </Button>
+        {canEdit && (
+          <Button
+            onClick={() => {
+              setEditing(null);
+              setOpen(true);
+            }}
+          >
+            <Plus className="h-4 w-4" /> Add driver
+          </Button>
+        )}
       </div>
 
       <Table>
@@ -130,19 +134,25 @@ export function DriversClient({ drivers }: { drivers: Driver[] }) {
                 </TD>
                 <TD>
                   <div className="flex justify-end gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        setEditing(d);
-                        setOpen(true);
-                      }}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => onDelete(d)}>
-                      <Trash2 className="h-4 w-4 text-[var(--danger)]" />
-                    </Button>
+                    {canEdit ? (
+                      <>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            setEditing(d);
+                            setOpen(true);
+                          }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => onDelete(d)}>
+                          <Trash2 className="h-4 w-4 text-[var(--danger)]" />
+                        </Button>
+                      </>
+                    ) : (
+                      <span className="text-xs text-[var(--muted)]">—</span>
+                    )}
                   </div>
                 </TD>
               </TR>

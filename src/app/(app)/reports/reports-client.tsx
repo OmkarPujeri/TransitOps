@@ -136,11 +136,14 @@ export function ReportsClient({
 
     return Array.from(map.values()).map((a) => {
       const totalCost = a.fuelCost + a.expenseCost + a.maintCost;
+      // Spec §3.8 ROI = (Revenue − (Maintenance + Fuel)) / Acquisition Cost, as a %.
+      const roiBase = a.revenue - (a.maintCost + a.fuelCost);
       return {
         ...a,
         totalCost,
         efficiency: a.liters > 0 ? Number((a.distance / a.liters).toFixed(1)) : 0,
-        roi: a.revenue - totalCost,
+        net: a.revenue - totalCost,
+        roi: a.acquisition > 0 ? Number(((roiBase / a.acquisition) * 100).toFixed(1)) : 0,
       };
     });
   }, [vehicles, trips, fuelLogs, expenses, maintenance]);
@@ -266,7 +269,7 @@ export function ReportsClient({
         {/* Vehicle ROI */}
         <Card>
           <CardHeader>
-            <CardTitle>Vehicle ROI (Revenue − Cost)</CardTitle>
+            <CardTitle>Vehicle ROI %</CardTitle>
           </CardHeader>
           {active.length === 0 ? (
             <Empty />
@@ -276,8 +279,8 @@ export function ReportsClient({
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                 <XAxis dataKey="reg" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip formatter={(v) => formatCurrency(Number(v))} />
-                <Bar dataKey="roi" name="Net" radius={[4, 4, 0, 0]}>
+                <Tooltip formatter={(v) => `${Number(v)}%`} />
+                <Bar dataKey="roi" name="ROI %" radius={[4, 4, 0, 0]}>
                   {active.map((v) => (
                     <Cell key={v.reg} fill={v.roi >= 0 ? COLORS.success : COLORS.danger} />
                   ))}
@@ -303,7 +306,8 @@ export function ReportsClient({
                   model: v.name,
                   revenue: v.revenue,
                   operating_cost: v.totalCost,
-                  net: v.roi,
+                  net: v.net,
+                  roi_pct: v.roi,
                   distance_km: v.distance,
                   efficiency_km_per_l: v.efficiency,
                 }))
@@ -320,12 +324,13 @@ export function ReportsClient({
               <TH className="text-right">Revenue</TH>
               <TH className="text-right">Cost</TH>
               <TH className="text-right">Net</TH>
+              <TH className="text-right">ROI %</TH>
               <TH className="text-right">km/L</TH>
             </TR>
           </THead>
           <tbody>
             {byVehicle.length === 0 ? (
-              <EmptyRow colSpan={5} label="No vehicles yet." />
+              <EmptyRow colSpan={6} label="No vehicles yet." />
             ) : (
               byVehicle.map((v) => (
                 <TR key={v.reg}>
@@ -334,8 +339,11 @@ export function ReportsClient({
                   </TD>
                   <TD className="text-right">{formatCurrency(v.revenue)}</TD>
                   <TD className="text-right">{formatCurrency(v.totalCost)}</TD>
+                  <TD className="text-right" style={{ color: v.net >= 0 ? "var(--success)" : "var(--danger)" }}>
+                    {formatCurrency(v.net)}
+                  </TD>
                   <TD className="text-right" style={{ color: v.roi >= 0 ? "var(--success)" : "var(--danger)" }}>
-                    {formatCurrency(v.roi)}
+                    {v.roi}%
                   </TD>
                   <TD className="text-right">{v.efficiency || "—"}</TD>
                 </TR>

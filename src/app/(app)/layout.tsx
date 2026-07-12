@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/sidebar";
+import { RoleProvider } from "@/components/role-context";
 import type { Role } from "@/lib/types";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -20,11 +21,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const role = (profile?.role ?? "fleet_manager") as Role;
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar name={name} role={role} />
-      <main className="flex-1 overflow-x-hidden">
-        <div className="mx-auto max-w-7xl p-6">{children}</div>
-      </main>
-    </div>
+    <RoleProvider role={role}>
+      <div className="flex min-h-screen">
+        <Sidebar name={name} role={role} />
+        <main className="flex-1 overflow-x-hidden">
+          <div className="mx-auto max-w-7xl p-6">{children}</div>
+        </main>
+      </div>
+    </RoleProvider>
   );
 }

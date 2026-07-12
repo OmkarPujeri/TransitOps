@@ -8,6 +8,7 @@ import { Input, Label, Select, Textarea } from "@/components/ui/input";
 import { Dialog } from "@/components/ui/dialog";
 import { Table, THead, TR, TH, TD, EmptyRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/toast";
+import { useCanEdit } from "@/components/role-context";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { MaintenanceLog, Vehicle } from "@/lib/types";
 import { openMaintenance, closeMaintenance } from "./actions";
@@ -22,6 +23,7 @@ export function MaintenanceClient({
   vehicles: Vehicle[];
 }) {
   const toast = useToast();
+  const canEdit = useCanEdit("/maintenance");
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [state, action, pending] = useActionState(openMaintenance, null);
@@ -45,11 +47,13 @@ export function MaintenanceClient({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <Button onClick={() => setOpen(true)}>
-          <Plus className="h-4 w-4" /> Log maintenance
-        </Button>
-      </div>
+      {canEdit && (
+        <div className="flex justify-end">
+          <Button onClick={() => setOpen(true)}>
+            <Plus className="h-4 w-4" /> Log maintenance
+          </Button>
+        </div>
+      )}
 
       <Table>
         <THead>
@@ -82,9 +86,13 @@ export function MaintenanceClient({
                 <TD>
                   <div className="flex justify-end">
                     {m.status === "open" ? (
-                      <Button size="sm" variant="success" disabled={busy === m.id} onClick={() => onClose(m.id)}>
-                        <CheckCircle2 className="h-3.5 w-3.5" /> Close & restore
-                      </Button>
+                      canEdit ? (
+                        <Button size="sm" variant="success" disabled={busy === m.id} onClick={() => onClose(m.id)}>
+                          <CheckCircle2 className="h-3.5 w-3.5" /> Close & restore
+                        </Button>
+                      ) : (
+                        <span className="text-xs text-[var(--muted)]">In shop</span>
+                      )
                     ) : (
                       <span className="text-xs text-[var(--muted)]">Resolved {formatDate(m.closed_at)}</span>
                     )}

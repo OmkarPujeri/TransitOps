@@ -4,17 +4,23 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, THead, TR, TH, TD, EmptyRow } from "@/components/ui/table";
 import { StatCard } from "./stat-card";
+import { FleetPanel, type FleetVehicle } from "./fleet-panel";
 import { formatCurrency } from "@/lib/utils";
 import {
-  VEHICLE_STATUS_META,
   TRIP_STATUS_META,
   type VehicleStatus,
   type DriverStatus,
   type TripStatus,
 } from "@/lib/types";
-import { Truck, Route, Gauge, Users, Wrench, DollarSign, AlertTriangle } from "lucide-react";
+import { Route, Users, Wrench, DollarSign, AlertTriangle } from "lucide-react";
 
-type VehicleRow = { status: VehicleStatus; name_model: string; reg_number: string };
+type VehicleRow = {
+  status: VehicleStatus;
+  name_model: string;
+  reg_number: string;
+  type: string;
+  region: string | null;
+};
 type DriverRow = { full_name: string; status: DriverStatus; license_expiry: string; safety_score: number };
 type TripRow = {
   status: TripStatus;
@@ -34,7 +40,7 @@ export default async function DashboardPage() {
   const supabase = await createClient();
 
   const [vehiclesRes, driversRes, tripsRes, maintRes] = await Promise.all([
-    supabase.from("vehicles").select("status, name_model, reg_number"),
+    supabase.from("vehicles").select("status, name_model, reg_number, type, region"),
     supabase.from("drivers").select("full_name, status, license_expiry, safety_score"),
     supabase
       .from("trips")
@@ -48,15 +54,8 @@ export default async function DashboardPage() {
   const trips = (tripsRes.data ?? []) as TripRow[];
   const maint = (maintRes.data ?? []) as { status: string }[];
 
-  const vStatus = countBy(vehicles);
   const dStatus = countBy(drivers);
   const tStatus = countBy(trips);
-
-  const totalVehicles = vehicles.length;
-  const retired = vStatus.retired ?? 0;
-  const operational = totalVehicles - retired;
-  const onTrip = vStatus.on_trip ?? 0;
-  const utilization = operational > 0 ? Math.round((onTrip / operational) * 100) : 0;
 
   const totalDrivers = drivers.length;
   const driversOnDuty = (dStatus.available ?? 0) + (dStatus.on_trip ?? 0);
@@ -83,46 +82,22 @@ export default async function DashboardPage() {
     <div>
       <PageHeader title="Dashboard" subtitle="Fleet operations at a glance." />
 
-      {/* KPI grid */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-        <StatCard label="Vehicles" value={totalVehicles} hint={`${operational} operational`} icon={Truck} tone="primary" />
+      {/* Operational KPIs (trips, drivers, maintenance, revenue) */}
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <StatCard label="Active Trips" value={activeTrips} hint={`${draftTrips} in draft`} icon={Route} tone="info" />
-        <StatCard label="Utilization" value={`${utilization}%`} hint="vehicles on trip" icon={Gauge} tone="success" />
         <StatCard label="Drivers On Duty" value={`${driversOnDuty}/${totalDrivers}`} hint="available or on trip" icon={Users} tone="info" />
         <StatCard label="Open Maintenance" value={openMaint} hint="jobs in progress" icon={Wrench} tone="warning" />
         <StatCard label="Revenue" value={formatCurrency(totalRevenue)} hint="completed trips" icon={DollarSign} tone="success" />
       </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-        {/* Fleet status breakdown */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Fleet Status</CardTitle>
-          </CardHeader>
-          <div className="space-y-3">
-            {(Object.keys(VEHICLE_STATUS_META) as VehicleStatus[]).map((s) => {
-              const meta = VEHICLE_STATUS_META[s];
-              const count = vStatus[s] ?? 0;
-              const pct = totalVehicles > 0 ? Math.round((count / totalVehicles) * 100) : 0;
-              return (
-                <div key={s}>
-                  <div className="mb-1 flex items-center justify-between text-sm">
-                    <Badge tone={meta.tone}>{meta.label}</Badge>
-                    <span className="font-medium">
-                      {count} <span className="text-[var(--muted)]">({pct}%)</span>
-                    </span>
-                  </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-2)]">
-                    <div className="h-full rounded-full bg-[var(--primary)]" style={{ width: `${pct}%` }} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
+      {/* Filterable fleet overview (spec §3.2: filter by type, status, region) */}
+      <div className="mt-4">
+        <FleetPanel vehicles={vehicles as FleetVehicle[]} />
+      </div>
 
+      <div className="mt-4 grid grid-cols-1 gap-4">
         {/* Recent trips */}
-        <div className="lg:col-span-2">
+        <div>
           <h3 className="mb-3 text-base font-semibold">Recent Trips</h3>
           <Table>
             <THead>
