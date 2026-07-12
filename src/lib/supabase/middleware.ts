@@ -1,45 +1,50 @@
-import { createServerClient } from "@supabase/ssr";
+import { jwtVerify } from "jose";
 import { NextResponse, type NextRequest } from "next/server";
 import { ROUTE_ACCESS, routeKey, canView, landingFor } from "@/lib/permissions";
 import type { Role } from "@/lib/types";
 
+// Duplicated from auth.ts so this file stays Edge-safe (no bcryptjs / pg import).
+const SESSION_COOKIE = "session";
+
+function secretKey(): Uint8Array {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("JWT_SECRET is not set");
+  return new TextEncoder().encode(secret);
+}
+
 export async function updateSession(request: NextRequest) {
-  let response = NextResponse.next({ request });
+  const token = request.cookies.get(SESSION_COOKIE)?.value;
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          );
-        },
-      },
+  // Verify the JWT session token (Edge-safe via jose).
+  let user: { id: string; email: string; role: Role } | null = null;
+  if (token) {
+    try {
+      const { payload } = await jwtVerify(token, secretKey());
+      if (payload.sub) {
+        user = {
+          id: payload.sub,
+          email: String(payload.email ?? ""),
+          role: payload.role as Role,
+        };
+      }
+    } catch {
+      // invalid or expired token — treat as unauthenticated
     }
-  );
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  }
 
   const path = request.nextUrl.pathname;
   const isAuthRoute = path.startsWith("/login") || path.startsWith("/signup");
   // The marketing landing page ("/") is open to everyone, logged in or not.
   const isPublic = isAuthRoute || path === "/" || path.startsWith("/auth");
 
+  // Unauthenticated visitors get bounced to login for protected pages.
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
+  // Authenticated users on login/signup get sent to the dashboard.
   if (user && isAuthRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
@@ -47,19 +52,14 @@ export async function updateSession(request: NextRequest) {
   }
 
   // RBAC route guard: block direct navigation to pages this role can't view.
+  // The role is embedded in the JWT, so no database query is needed.
   if (user && !isPublic && ROUTE_ACCESS[routeKey(path)]) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-    const role = (profile?.role ?? "fleet_manager") as Role;
-    if (!canView(role, path)) {
+    if (!canView(user.role, path)) {
       const url = request.nextUrl.clone();
-      url.pathname = landingFor(role);
+      url.pathname = landingFor(user.role);
       return NextResponse.redirect(url);
     }
   }
 
-  return response;
+  return NextResponse.next({ request });
 }

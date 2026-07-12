@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import type { Vehicle, Driver, Trip } from "@/lib/types";
 
 type DB = Awaited<ReturnType<typeof createClient>>;
 
@@ -30,12 +31,12 @@ export async function buildFleetSnapshot(supabase: DB): Promise<FleetSnapshot> {
       supabase.from("maintenance_logs").select("cost, status, vehicle_id"),
     ]);
 
-  const V = vehicles ?? [];
-  const D = drivers ?? [];
-  const T = trips ?? [];
-  const F = fuel ?? [];
-  const E = expenses ?? [];
-  const M = maint ?? [];
+  const V = (vehicles ?? []) as Vehicle[];
+  const D = (drivers ?? []) as Driver[];
+  const T = (trips ?? []) as (Trip & { vehicles?: { reg_number: string } | null; drivers?: { full_name: string } | null })[];
+  const F = (fuel ?? []) as { cost: number; liters: number; vehicle_id: string }[];
+  const E = (expenses ?? []) as { amount: number; vehicle_id: string }[];
+  const M = (maint ?? []) as { cost: number; status: string; vehicle_id: string }[];
 
   const vehiclesAvailable = V.filter((v) => v.status === "available");
   const eligibleDrivers = D.filter((d) => d.status === "available" && d.license_expiry >= today);

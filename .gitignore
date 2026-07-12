@@ -25,6 +25,14 @@
 *.pem
 .claude/
 
+# local file storage (vehicle docs etc.)
+/uploads
+
+# local postgres server
+/pgsql/
+/pgdata/
+logfile
+
 # debug
 npm-debug.log*
 yarn-debug.log*
