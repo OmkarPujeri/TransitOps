@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, Search, AlertTriangle } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, AlertTriangle, BellRing, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input, Label, Select } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { Table, THead, TR, TH, TD, EmptyRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/toast";
 import { useCanEdit } from "@/components/role-context";
+import { useSort } from "@/lib/use-sort";
 import { formatDate, daysUntil, cn } from "@/lib/utils";
 import { DRIVER_STATUS_META, type Driver, type DriverStatus } from "@/lib/types";
 import { saveDriver, deleteDriver } from "./actions";
@@ -59,6 +60,34 @@ export function DriversClient({ drivers }: { drivers: Driver[] }) {
       d.license_number.toLowerCase().includes(q.toLowerCase())
   );
 
+  const { sorted, SortTH } = useSort(filtered, "full_name");
+  const [reminding, setReminding] = useState(false);
+
+  async function sendReminders() {
+    setReminding(true);
+    try {
+      const res = await fetch("/api/reminders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ withinDays: 30 }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        toast.push(data.error, "error");
+      } else if (data.count === 0) {
+        toast.push("No licenses expiring in the next 30 days", "info");
+      } else if (data.dryRun) {
+        toast.push(`${data.count} license(s) flagged — preview only (add RESEND_API_KEY to email)`, "info");
+      } else {
+        toast.push(`Reminder emailed — ${data.count} license(s) flagged`, "success");
+      }
+    } catch {
+      toast.push("Reminder request failed", "error");
+    } finally {
+      setReminding(false);
+    }
+  }
+
   async function onDelete(d: Driver) {
     if (!confirm(`Delete ${d.full_name}?`)) return;
     const res = await deleteDriver(d.id);
@@ -78,34 +107,40 @@ export function DriversClient({ drivers }: { drivers: Driver[] }) {
           />
         </div>
         {canEdit && (
-          <Button
-            onClick={() => {
-              setEditing(null);
-              setOpen(true);
-            }}
-          >
-            <Plus className="h-4 w-4" /> Add driver
-          </Button>
+          <>
+            <Button variant="outline" onClick={sendReminders} disabled={reminding}>
+              {reminding ? <Loader2 className="h-4 w-4 animate-spin" /> : <BellRing className="h-4 w-4" />}
+              License reminders
+            </Button>
+            <Button
+              onClick={() => {
+                setEditing(null);
+                setOpen(true);
+              }}
+            >
+              <Plus className="h-4 w-4" /> Add driver
+            </Button>
+          </>
         )}
       </div>
 
       <Table>
         <THead>
           <tr>
-            <TH>Name</TH>
-            <TH>License #</TH>
-            <TH>Cat.</TH>
-            <TH>License expiry</TH>
-            <TH>Safety</TH>
-            <TH>Status</TH>
+            <SortTH field="full_name">Name</SortTH>
+            <SortTH field="license_number">License #</SortTH>
+            <SortTH field="license_category">Cat.</SortTH>
+            <SortTH field="license_expiry">License expiry</SortTH>
+            <SortTH field="safety_score">Safety</SortTH>
+            <SortTH field="status">Status</SortTH>
             <TH className="text-right">Actions</TH>
           </tr>
         </THead>
         <tbody>
-          {filtered.length === 0 ? (
+          {sorted.length === 0 ? (
             <EmptyRow colSpan={7} label="No drivers found." />
           ) : (
-            filtered.map((d) => (
+            sorted.map((d) => (
               <TR key={d.id}>
                 <TD className="font-medium">{d.full_name}</TD>
                 <TD className="font-mono text-[var(--muted)]">{d.license_number}</TD>
