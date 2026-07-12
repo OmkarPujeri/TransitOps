@@ -30,7 +30,7 @@ export function MaintenanceClient({
 
   useEffect(() => {
     if (state && !state.error && open) {
-      toast.push("Maintenance opened — vehicle moved to shop");
+      toast.push("Maintenance opened. Vehicle moved to shop");
       setOpen(false);
     } else if (state?.error) {
       toast.push(state.error, "error");
@@ -41,7 +41,7 @@ export function MaintenanceClient({
   async function onClose(id: string) {
     setBusy(id);
     const res = await closeMaintenance(id);
-    toast.push(res.error ?? "Maintenance closed — vehicle available", res.error ? "error" : "success");
+    toast.push(res.error ?? "Maintenance closed. Vehicle available", res.error ? "error" : "success");
     setBusy(null);
   }
 
@@ -114,7 +114,7 @@ export function MaintenanceClient({
               </option>
               {vehicles.map((v) => (
                 <option key={v.id} value={v.id}>
-                  {v.reg_number} — {v.name_model} ({v.status})
+                  {v.reg_number} - {v.name_model} ({v.status})
                 </option>
               ))}
             </Select>

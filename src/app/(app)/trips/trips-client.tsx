@@ -78,7 +78,7 @@ export function TripsClient({
         toast.push("Copilot picked the best match", "info");
       }
     } catch {
-      toast.push("AI request failed — the AI service isn't configured yet", "error");
+      toast.push("AI request failed. The AI service isn't configured yet", "error");
     } finally {
       setAiLoading(false);
     }
@@ -153,7 +153,7 @@ export function TripsClient({
                 <option value="">Select vehicle…</option>
                 {availableVehicles.map((v) => (
                   <option key={v.id} value={v.id}>
-                    {v.reg_number} — {v.name_model} ({v.max_load_kg.toLocaleString()}kg)
+                    {v.reg_number} - {v.name_model} ({v.max_load_kg.toLocaleString()}kg)
                   </option>
                 ))}
               </Select>
@@ -169,7 +169,7 @@ export function TripsClient({
                 <option value="">Select driver…</option>
                 {eligibleDrivers.map((d) => (
                   <option key={d.id} value={d.id}>
-                    {d.full_name} — safety {d.safety_score}
+                    {d.full_name} - safety {d.safety_score}
                   </option>
                 ))}
               </Select>
@@ -338,7 +338,7 @@ function CompleteDialog({
     const res = await completeTrip(trip!.id, distance, fuel);
     setBusy(false);
     if (res.error) return toast.push(res.error, "error");
-    toast.push("Trip completed — vehicle & driver freed");
+    toast.push("Trip completed. Vehicle & driver freed");
     onDone();
   }
 

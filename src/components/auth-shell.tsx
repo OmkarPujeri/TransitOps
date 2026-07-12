@@ -20,7 +20,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
 
         <div className="relative max-w-md">
           <h2 className="text-3xl font-bold leading-tight tracking-tight">
-            Every vehicle, driver, and trip — in one console.
+            Every vehicle, driver, and trip, in one console.
           </h2>
           <p className="mt-3 text-sm text-[var(--muted)]">
             Replace the spreadsheets. Dispatch with live validation, track fuel and costs, and see

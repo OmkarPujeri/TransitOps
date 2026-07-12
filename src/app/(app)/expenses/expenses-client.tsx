@@ -251,7 +251,7 @@ function FuelSection({
                 <option value="">Select vehicle…</option>
                 {vehicles.map((v) => (
                   <option key={v.id} value={v.id}>
-                    {v.reg_number} — {v.name_model}
+                    {v.reg_number} - {v.name_model}
                   </option>
                 ))}
               </Select>
@@ -447,7 +447,7 @@ function ExpenseSection({
                 <option value="">Not vehicle-specific</option>
                 {vehicles.map((v) => (
                   <option key={v.id} value={v.id}>
-                    {v.reg_number} — {v.name_model}
+                    {v.reg_number} - {v.name_model}
                   </option>
                 ))}
               </Select>

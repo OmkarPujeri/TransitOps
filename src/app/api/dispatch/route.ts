@@ -58,7 +58,7 @@ export async function POST(req: Request) {
   const fallbackReason =
     `${vehicle.reg_number} (${vehicle.max_load_kg.toLocaleString()}kg capacity, ` +
     `${spare.toLocaleString()}kg to spare) is the tightest fit for ${cargo.toLocaleString()}kg, ` +
-    `paired with ${driver.full_name} (safety score ${driver.safety_score}) — the top pick among ` +
+    `paired with ${driver.full_name} (safety score ${driver.safety_score}), the top pick among ` +
     `${fitting.length} suitable vehicle(s) and ${eligibleDrivers.length} eligible driver(s).`;
 
   let reason = fallbackReason;

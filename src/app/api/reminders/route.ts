@@ -58,7 +58,7 @@ export async function POST(req: Request) {
 
   const html = `
     <div style="font-family:system-ui,sans-serif;max-width:560px">
-      <h2 style="color:#4f46e5">TransitOps — License Reminders</h2>
+      <h2 style="color:#4f46e5">TransitOps · License Reminders</h2>
       <p>${flagged.length} driver license(s) need attention within ${withinDays} days:</p>
       <table style="border-collapse:collapse;width:100%;font-size:14px;border:1px solid #e2e8f0">
         <thead><tr style="background:#f1f3f5;text-align:left">

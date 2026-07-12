@@ -31,7 +31,7 @@ export async function uploadVehicleDocument(_prev: unknown, formData: FormData):
   });
   if (upErr) {
     if (/bucket/i.test(upErr.message)) {
-      return { error: "Storage bucket 'vehicle-docs' not found — run supabase/documents.sql first." };
+      return { error: "Storage bucket 'vehicle-docs' not found. Run supabase/documents.sql first." };
     }
     return { error: upErr.message };
   }

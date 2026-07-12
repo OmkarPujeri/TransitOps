@@ -34,7 +34,7 @@ export function Sidebar({ name, role }: { name: string; role: Role }) {
   const nav = NAV.filter((item) => canView(role, item.href));
 
   return (
-    <aside className="flex w-60 flex-col border-r border-[var(--border)] bg-[var(--background)]">
+    <aside className="sticky top-0 flex h-screen w-60 flex-col border-r border-[var(--border)] bg-[var(--background)]">
       <Link href="/" className="flex items-center gap-2 px-5 py-5">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--primary)] text-white">
           <Truck className="h-5 w-5" />
@@ -45,7 +45,7 @@ export function Sidebar({ name, role }: { name: string; role: Role }) {
         </div>
       </Link>
 
-      <nav className="flex-1 space-y-1 px-3 py-2">
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-2">
         {nav.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (

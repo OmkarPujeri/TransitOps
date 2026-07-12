@@ -113,7 +113,7 @@ function Hero({ authed }: { authed: boolean }) {
           without the spreadsheets
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-lg text-[var(--muted)]">
-          TransitOps unifies vehicles, drivers, dispatch, maintenance and costs — with a status
+          TransitOps unifies vehicles, drivers, dispatch, maintenance and costs, with a status
           engine enforced at the database, not the UI.
         </p>
         <div className="mt-9 flex items-center justify-center gap-3">
@@ -240,7 +240,7 @@ const FEATURES = [
   {
     icon: Route,
     title: "Dispatch with live validation",
-    body: "Load limits, license expiry and availability are checked before a trip goes out — not after.",
+    body: "Load limits, license expiry and availability are checked before a trip goes out, not after.",
   },
   {
     icon: ShieldCheck,
@@ -265,7 +265,7 @@ const FEATURES = [
   {
     icon: Sparkles,
     title: "AI Copilot",
-    body: "Ask about idle vehicles or the best driver for a load — grounded in your live data.",
+    body: "Ask about idle vehicles or the best driver for a load, grounded in your live data.",
   },
 ];
 
@@ -275,7 +275,7 @@ function Features() {
       <div className="mx-auto max-w-2xl text-center">
         <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Everything the fleet touches</h2>
         <p className="mt-4 text-[var(--muted)]">
-          One console for the whole lifecycle — from registering a vehicle to closing the books on a
+          One console for the whole lifecycle, from registering a vehicle to closing the books on a
           trip.
         </p>
       </div>
@@ -297,7 +297,7 @@ function Features() {
 function Workflow() {
   const steps = [
     { n: "01", title: "Register your fleet", body: "Add vehicles and drivers with licenses, load limits and safety scores." },
-    { n: "02", title: "Dispatch trips", body: "Draft, validate and dispatch — the status engine keeps everything in sync." },
+    { n: "02", title: "Dispatch trips", body: "Draft, validate and dispatch. The status engine keeps everything in sync." },
     { n: "03", title: "Track and report", body: "Watch utilization, costs and compliance live, and export what you need." },
   ];
   return (
@@ -360,7 +360,7 @@ function Footer() {
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
         <Logo />
         <p className="text-xs text-[var(--muted)]">
-          © 2026 TransitOps — Smart Transport Operations.
+          © 2026 TransitOps · Smart Transport Operations.
         </p>
         <div className="flex items-center gap-6 text-sm text-[var(--muted)]">
           <Link href="/login" className="transition hover:text-[var(--foreground)]">

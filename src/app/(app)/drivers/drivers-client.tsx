@@ -77,9 +77,9 @@ export function DriversClient({ drivers }: { drivers: Driver[] }) {
       } else if (data.count === 0) {
         toast.push("No licenses expiring in the next 30 days", "info");
       } else if (data.dryRun) {
-        toast.push(`${data.count} license(s) flagged — preview only (add RESEND_API_KEY to email)`, "info");
+        toast.push(`${data.count} license(s) flagged, preview only (add RESEND_API_KEY to email)`, "info");
       } else {
-        toast.push(`Reminder emailed — ${data.count} license(s) flagged`, "success");
+        toast.push(`Reminder emailed. ${data.count} license(s) flagged`, "success");
       }
     } catch {
       toast.push("Reminder request failed", "error");

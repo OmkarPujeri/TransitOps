@@ -410,7 +410,7 @@ export function ReportsClient({
 function Empty() {
   return (
     <div className="grid h-[280px] place-items-center text-sm text-[var(--muted)]">
-      No data yet — dispatch and complete a few trips to populate this report.
+      No data yet. Dispatch and complete a few trips to populate this report.
     </div>
   );
 }

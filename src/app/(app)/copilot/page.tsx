@@ -12,7 +12,7 @@ export default async function CopilotPage() {
     <div className="flex h-[calc(100vh-6rem)] flex-col">
       <PageHeader
         title="AI Copilot"
-        subtitle="Ask about your fleet in plain English — answers are grounded in live data."
+        subtitle="Ask about your fleet in plain English. Answers are grounded in live data."
       />
       <CopilotClient summary={summary} configured={groqConfigured()} />
     </div>

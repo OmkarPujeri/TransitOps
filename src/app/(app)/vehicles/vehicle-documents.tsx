@@ -62,7 +62,7 @@ export function VehicleDocumentsDialog({
     <Dialog
       open={open}
       onClose={onClose}
-      title={`Documents — ${vehicle.reg_number}`}
+      title={`Documents - ${vehicle.reg_number}`}
       description="Registration, insurance, inspection certificates, and other files."
     >
       <div className="space-y-4">

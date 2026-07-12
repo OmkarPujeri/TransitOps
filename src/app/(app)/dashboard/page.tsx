@@ -139,7 +139,7 @@ export default async function DashboardPage() {
           <Badge tone={alerts.length ? "danger" : "success"}>{alerts.length} active</Badge>
         </CardHeader>
         {alerts.length === 0 ? (
-          <p className="text-sm text-[var(--muted)]">All clear — no fleet alerts right now.</p>
+          <p className="text-sm text-[var(--muted)]">All clear. No fleet alerts right now.</p>
         ) : (
           <ul className="space-y-2">
             {alerts.map((a, i) => (
