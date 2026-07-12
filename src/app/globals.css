@@ -14,6 +14,23 @@
   --danger: #dc2626;
   --info: #0284c7;
   --radius: 0.65rem;
+  color-scheme: light;
+}
+
+.dark {
+  --background: #0b1020;
+  --surface: #131a2c;
+  --surface-2: #1c2438;
+  --foreground: #e8ecf4;
+  --muted: #8b97ad;
+  --border: #26304a;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #38bdf8;
+  color-scheme: dark;
 }
 
 @theme inline {
