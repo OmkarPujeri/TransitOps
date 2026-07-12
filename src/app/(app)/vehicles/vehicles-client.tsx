@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input, Label, Select } from "@/components/ui/input";
@@ -9,18 +9,27 @@ import { Dialog } from "@/components/ui/dialog";
 import { Table, THead, TR, TH, TD, EmptyRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/toast";
 import { useCanEdit } from "@/components/role-context";
+import { useSort } from "@/lib/use-sort";
 import { formatCurrency } from "@/lib/utils";
-import { VEHICLE_STATUS_META, type Vehicle, type VehicleStatus } from "@/lib/types";
+import { VEHICLE_STATUS_META, type Vehicle, type VehicleStatus, type VehicleDocument } from "@/lib/types";
 import { saveVehicle, deleteVehicle } from "./actions";
+import { VehicleDocumentsDialog } from "./vehicle-documents";
 
 const TYPES = ["Truck", "Van", "Pickup", "Car", "Bus"];
 const STATUSES: VehicleStatus[] = ["available", "on_trip", "in_shop", "retired"];
 
-export function VehiclesClient({ vehicles }: { vehicles: Vehicle[] }) {
+export function VehiclesClient({
+  vehicles,
+  documents,
+}: {
+  vehicles: Vehicle[];
+  documents: Record<string, VehicleDocument[]>;
+}) {
   const toast = useToast();
   const canEdit = useCanEdit("/vehicles");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Vehicle | null>(null);
+  const [docsFor, setDocsFor] = useState<Vehicle | null>(null);
   const [q, setQ] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [state, action, pending] = useActionState(saveVehicle, null);
@@ -44,6 +53,8 @@ export function VehiclesClient({ vehicles }: { vehicles: Vehicle[] }) {
     const matchesStatus = statusFilter === "all" || v.status === statusFilter;
     return matchesQ && matchesStatus;
   });
+
+  const { sorted, SortTH } = useSort(filtered, "reg_number");
 
   async function onDelete(v: Vehicle) {
     if (!confirm(`Delete ${v.reg_number}? This cannot be undone.`)) return;
@@ -90,21 +101,21 @@ export function VehiclesClient({ vehicles }: { vehicles: Vehicle[] }) {
       <Table>
         <THead>
           <tr>
-            <TH>Reg #</TH>
-            <TH>Model</TH>
-            <TH>Type</TH>
-            <TH>Capacity</TH>
-            <TH>Odometer</TH>
-            <TH>Cost</TH>
-            <TH>Status</TH>
+            <SortTH field="reg_number">Reg #</SortTH>
+            <SortTH field="name_model">Model</SortTH>
+            <SortTH field="type">Type</SortTH>
+            <SortTH field="max_load_kg">Capacity</SortTH>
+            <SortTH field="odometer">Odometer</SortTH>
+            <SortTH field="acquisition_cost">Cost</SortTH>
+            <SortTH field="status">Status</SortTH>
             <TH className="text-right">Actions</TH>
           </tr>
         </THead>
         <tbody>
-          {filtered.length === 0 ? (
+          {sorted.length === 0 ? (
             <EmptyRow colSpan={8} label="No vehicles match your filters." />
           ) : (
-            filtered.map((v) => (
+            sorted.map((v) => (
               <TR key={v.id}>
                 <TD className="font-mono font-medium">{v.reg_number}</TD>
                 <TD>{v.name_model}</TD>
@@ -119,7 +130,22 @@ export function VehiclesClient({ vehicles }: { vehicles: Vehicle[] }) {
                 </TD>
                 <TD>
                   <div className="flex justify-end gap-1">
-                    {canEdit ? (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      title="Documents"
+                      onClick={() => setDocsFor(v)}
+                    >
+                      <span className="relative">
+                        <FileText className="h-4 w-4" />
+                        {(documents[v.id]?.length ?? 0) > 0 && (
+                          <span className="absolute -right-1.5 -top-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-[var(--primary)] px-1 text-[9px] font-bold text-white">
+                            {documents[v.id].length}
+                          </span>
+                        )}
+                      </span>
+                    </Button>
+                    {canEdit && (
                       <>
                         <Button
                           variant="ghost"
@@ -135,8 +161,6 @@ export function VehiclesClient({ vehicles }: { vehicles: Vehicle[] }) {
                           <Trash2 className="h-4 w-4 text-[var(--danger)]" />
                         </Button>
                       </>
-                    ) : (
-                      <span className="text-xs text-[var(--muted)]">—</span>
                     )}
                   </div>
                 </TD>
@@ -217,6 +241,15 @@ export function VehiclesClient({ vehicles }: { vehicles: Vehicle[] }) {
           </div>
         </form>
       </Dialog>
+
+      {docsFor && (
+        <VehicleDocumentsDialog
+          vehicle={docsFor}
+          documents={documents[docsFor.id] ?? []}
+          open={!!docsFor}
+          onClose={() => setDocsFor(null)}
+        />
+      )}
     </div>
   );
 }

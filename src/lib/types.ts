@@ -92,6 +92,16 @@ export interface Expense {
   logged_at: string;
 }
 
+export interface VehicleDocument {
+  id: string;
+  vehicle_id: string;
+  name: string;
+  path: string;
+  size: number;
+  mime: string | null;
+  uploaded_at: string;
+}
+
 export const VEHICLE_STATUS_META: Record<VehicleStatus, { label: string; tone: string }> = {
   available: { label: "Available", tone: "success" },
   on_trip: { label: "On Trip", tone: "info" },
