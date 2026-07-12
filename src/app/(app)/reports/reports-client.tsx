@@ -14,9 +14,10 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { Download } from "lucide-react";
+import { Download, FileDown } from "lucide-react";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { exportReportPDF } from "@/lib/pdf";
 import { Table, THead, TR, TH, TD, EmptyRow } from "@/components/ui/table";
 import { formatCurrency } from "@/lib/utils";
 import {
@@ -174,8 +175,45 @@ export function ReportsClient({
     { label: "Avg Fuel Efficiency", value: `${totals.avgEff} km/L` },
   ];
 
+  function exportPDF() {
+    exportReportPDF({
+      title: "Reports & Analytics",
+      subtitle: "Fleet cost, utilization, and performance breakdown.",
+      filename: "transitops-report.pdf",
+      summary,
+      tables: [
+        {
+          heading: "Per-Vehicle Breakdown",
+          columns: [
+            { header: "Vehicle", key: "vehicle" },
+            { header: "Revenue", key: "revenue" },
+            { header: "Cost", key: "cost" },
+            { header: "Net", key: "net" },
+            { header: "ROI %", key: "roi" },
+            { header: "km/L", key: "eff" },
+          ],
+          rows: byVehicle.map((v) => ({
+            vehicle: `${v.reg} · ${v.name}`,
+            revenue: formatCurrency(v.revenue),
+            cost: formatCurrency(v.totalCost),
+            net: formatCurrency(v.net),
+            roi: `${v.roi}%`,
+            eff: v.efficiency || "—",
+          })),
+        },
+      ],
+    });
+  }
+
   return (
     <div className="space-y-4">
+      {/* Export bar */}
+      <div className="flex justify-end">
+        <Button size="sm" variant="outline" onClick={exportPDF} disabled={byVehicle.length === 0}>
+          <FileDown className="h-4 w-4" /> Export PDF
+        </Button>
+      </div>
+
       {/* Summary row */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {summary.map((s) => (
